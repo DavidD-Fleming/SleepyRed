@@ -11,27 +11,42 @@ public class BlackPlayer : MonoBehaviour
     float screenHalfWidthInWorldUnits;
     float halfPlayerWidth;
 
+    public float health = 2;
+    public Text healthUI;
+    public event System.Action OnBPlayerDeath;
+    public GameObject flashWhenDamaged;
+
+    bool isOtherPlayerDead = false;
+    bool amIDead = false;
+
     // Start is called before the first frame update
     void Start()
     {
         halfPlayerWidth = transform.localScale.x / 2f;
         screenHalfWidthInWorldUnits = Camera.main.aspect * Camera.main.orthographicSize + halfPlayerWidth;
+
+        FindObjectOfType<WhitePlayer>().OnWPlayerDeath += OtherPlayerIsDead;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // switches between active and inactive
-        if (Input.GetKeyDown("z"))
+        // switches between active and inactive if other player is still alive
+        if (isOtherPlayerDead == false && amIDead == false)
         {
-            if (active == true)
+            if (Input.GetKeyDown("z"))
             {
-                active = false;
-                this.GetComponent<Renderer>().material.SetColor("_Color", new Color32(125, 25, 25, 255));
-            } else
-            {
-                active = true;
-                this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+                if (active == true)
+                {
+                    active = false;
+                    // changes the player to a "sleepy" blue
+                    this.GetComponent<Renderer>().material.SetColor("_Color", new Color32(125, 50, 50, 255));
+                }
+                else
+                {
+                    active = true;
+                    this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+                }
             }
         }
 
@@ -52,5 +67,44 @@ public class BlackPlayer : MonoBehaviour
         {
             transform.position = new Vector2(-screenHalfWidthInWorldUnits, transform.position.y);
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D triggerCollider)
+    {
+        if (active == true)
+        {
+            if (triggerCollider.tag == "FH")
+            {
+                // take damage
+                health--;
+                healthUI.text = health.ToString("N0");
+
+                StartCoroutine(BlackTookDamage(0.5f));
+                Destroy(triggerCollider.gameObject);
+            }
+        }
+    }
+
+    IEnumerator BlackTookDamage(float redTime)
+    {
+        flashWhenDamaged.SetActive(true);
+        yield return new WaitForSeconds(redTime);
+        flashWhenDamaged.SetActive(false);
+
+        if (OnBPlayerDeath != null && health == 0)
+        {
+            OnBPlayerDeath();
+            active = false;
+            amIDead = true;
+            this.GetComponent<Renderer>().material.SetColor("_Color", new Color32(0, 0, 0, 0));
+        }
+    }
+
+    void OtherPlayerIsDead()
+    {
+        Debug.Log("oh no white!");
+        isOtherPlayerDead = true;
+        this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+        active = true;
     }
 }

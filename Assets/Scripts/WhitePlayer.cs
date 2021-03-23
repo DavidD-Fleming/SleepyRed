@@ -13,6 +13,14 @@ public class WhitePlayer : MonoBehaviour
     float halfPlayerWidth;
     float halfPlayerHeight;
 
+    public float health = 2;
+    public Text healthUI;
+    public event System.Action OnWPlayerDeath;
+    public GameObject flashWhenDamaged;
+
+    bool isOtherPlayerDead = false;
+    bool amIDead = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,24 +28,29 @@ public class WhitePlayer : MonoBehaviour
         halfPlayerHeight = transform.localScale.y / 2f;
         screenHalfWidthInWorldUnits = Camera.main.aspect * Camera.main.orthographicSize - halfPlayerWidth;
         screenHalfHeightInWorldUnits = Camera.main.orthographicSize - halfPlayerHeight;
+
+        FindObjectOfType<BlackPlayer>().OnBPlayerDeath += OtherPlayerIsDead;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // switches between active and inactive
-        if (Input.GetKeyDown("z"))
+        // switches between active and inactive if other player is still alive
+        if (isOtherPlayerDead == false && amIDead == false)
         {
-            if (active == true)
+            if (Input.GetKeyDown("z"))
             {
-                active = false;
-                // changes the player to a "sleepy" blue
-                this.GetComponent<Renderer>().material.SetColor("_Color", new Color32(50, 50, 125, 255));
-            }
-            else
-            {
-                active = true;
-                this.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+                if (active == true)
+                {
+                    active = false;
+                    // changes the player to a "sleepy" blue
+                    this.GetComponent<Renderer>().material.SetColor("_Color", new Color32(50, 50, 125, 255));
+                }
+                else
+                {
+                    active = true;
+                    this.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+                }
             }
         }
 
@@ -69,5 +82,44 @@ public class WhitePlayer : MonoBehaviour
         {
             transform.position = new Vector2(transform.position.x, screenHalfHeightInWorldUnits);
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D triggerCollider)
+    {
+        if (active == true)
+        {
+            if (triggerCollider.tag == "FH")
+            {
+                // take damage
+                health--;
+                healthUI.text = health.ToString("N0");
+
+                StartCoroutine(WhiteTookDamage(0.5f));
+                Destroy(triggerCollider.gameObject);
+            }
+        }
+    }
+
+    IEnumerator WhiteTookDamage(float redTime)
+    {
+        flashWhenDamaged.SetActive(true);
+        yield return new WaitForSeconds(redTime);
+        flashWhenDamaged.SetActive(false);
+
+        if (OnWPlayerDeath != null && health <= 0)
+        {
+            OnWPlayerDeath();
+            active = false;
+            amIDead = true;
+            this.GetComponent<Renderer>().material.SetColor("_Color", new Color32(0, 0, 0, 0));
+        }
+    }
+
+    void OtherPlayerIsDead()
+    {
+        Debug.Log("oh no black!");
+        isOtherPlayerDead = true;
+        this.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+        active = true;
     }
 }
