@@ -5,17 +5,25 @@ using UnityEngine.UI;
 
 public class BlackPlayer : MonoBehaviour
 {
+    // speed and collision
     public float speed = 7;
+    public float jumpHeight = 3;
+    float verticalSpeed;
 
-    bool active = true;
+    // dimesions
     float screenHalfWidthInWorldUnits;
+    float screenHalfHeightInWorldUnits;
     float halfPlayerWidth;
+    float halfPlayerHeight;
 
+    // active, health, death
+    bool active = true;
     public float health = 2;
     public Text healthUI;
     public event System.Action OnBPlayerDeath;
     public GameObject flashWhenDamaged;
 
+    // state of players
     bool isOtherPlayerDead = false;
     bool amIDead = false;
 
@@ -23,7 +31,9 @@ public class BlackPlayer : MonoBehaviour
     void Start()
     {
         halfPlayerWidth = transform.localScale.x / 2f;
-        screenHalfWidthInWorldUnits = Camera.main.aspect * Camera.main.orthographicSize + halfPlayerWidth;
+        halfPlayerHeight = transform.localScale.y / 2f;
+        screenHalfWidthInWorldUnits = Camera.main.aspect * Camera.main.orthographicSize - halfPlayerWidth;
+        screenHalfHeightInWorldUnits = Camera.main.orthographicSize - halfPlayerHeight;
 
         FindObjectOfType<WhitePlayer>().OnWPlayerDeath += OtherPlayerIsDead;
     }
@@ -50,15 +60,28 @@ public class BlackPlayer : MonoBehaviour
             }
         }
 
+        // vertical reaction to gravity
+        verticalSpeed -= 9.8f * Time.deltaTime;
+        if (transform.position.y == -screenHalfHeightInWorldUnits) verticalSpeed = 0;
+
         // allows horizontal movement if player is currently active
         if (active == true)
         {
             float inputX = Input.GetAxisRaw("Horizontal");
             float velocity = inputX * speed;
             transform.Translate(Vector2.right * velocity * Time.deltaTime);
+
+            // enables a jump
+            if (Input.GetKeyDown(KeyCode.Space) && transform.position.y == -screenHalfHeightInWorldUnits)
+            {
+                verticalSpeed = Mathf.Sqrt(2 * 9.8f * jumpHeight);
+            }
         }
 
-        // teleports player to the other side of the screen if it moves out of camera
+        // vertical movement
+        transform.Translate(Vector2.up * verticalSpeed * Time.deltaTime);
+
+        // teleports player to the other side of the screen if it moves out of camera and prevents falling off the world
         if (transform.position.x < -screenHalfWidthInWorldUnits)
         {
             transform.position = new Vector2(screenHalfWidthInWorldUnits, transform.position.y);
@@ -67,12 +90,17 @@ public class BlackPlayer : MonoBehaviour
         {
             transform.position = new Vector2(-screenHalfWidthInWorldUnits, transform.position.y);
         }
+        if (transform.position.y < -screenHalfHeightInWorldUnits)
+        {
+            transform.position = new Vector2(transform.position.x, -screenHalfHeightInWorldUnits);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D triggerCollider)
     {
         if (active == true)
         {
+            // FH Damage
             if (triggerCollider.tag == "FH")
             {
                 // take damage
@@ -81,6 +109,15 @@ public class BlackPlayer : MonoBehaviour
 
                 StartCoroutine(BlackTookDamage(0.5f));
                 Destroy(triggerCollider.gameObject);
+            }
+
+            // SH Damage
+            if (triggerCollider.tag == "StabbingHazard")
+            {
+                health--;
+                healthUI.text = health.ToString("N0");
+
+                StartCoroutine(BlackTookDamage(0.5f));
             }
         }
     }
@@ -104,7 +141,10 @@ public class BlackPlayer : MonoBehaviour
     {
         Debug.Log("oh no white!");
         isOtherPlayerDead = true;
-        this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-        active = true;
+        if (amIDead == false)
+        {
+            this.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+            active = true;
+        }
     }
 }

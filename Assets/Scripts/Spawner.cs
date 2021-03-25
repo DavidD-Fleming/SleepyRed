@@ -10,6 +10,10 @@ public class Spawner : MonoBehaviour
     public float fhSpawnAngleMax;
     float fhNextSpawnTime;
 
+    public GameObject shPrefab;
+    public Vector2 shSpawnTimeMinMax;
+    float shNextSpawnTime;
+
     Vector2 screenHalfSizeWorldUnits;
 
     // Start is called before the first frame update
@@ -21,16 +25,29 @@ public class Spawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Falling Hazard Spawn
         if (fhNextSpawnTime < Time.time)
         {
+            // FH Spawn Time
             float fhSpawnTime = Mathf.Lerp(fhSpawnTimeMinMax.y, fhSpawnTimeMinMax.x, Difficulty.GetDifficultyPercent());
             fhNextSpawnTime = Time.time + fhSpawnTime;
-
+            // FH Spawn Features
             float fhSpawnAngle = Random.Range(-fhSpawnAngleMax, fhSpawnAngleMax);
             float fhSpawnSize = Random.Range(fhSpawnSizeMinMax.x, fhSpawnSizeMinMax.y);
             Vector3 fhSpawnPosition = new Vector3(Random.Range(-screenHalfSizeWorldUnits.x, screenHalfSizeWorldUnits.x), 2 * screenHalfSizeWorldUnits.y + fhSpawnSize / 2);
             GameObject newFallingHazard = (GameObject)Instantiate(fhPrefab, fhSpawnPosition, Quaternion.Euler(Vector3.forward * fhSpawnAngle));
-            newFallingHazard.transform.localScale = Vector2.one * fhSpawnSize;
+            newFallingHazard.transform.localScale = Vector2.one * fhSpawnSize; 
+        }
+
+        // Stabbing Hazard Spawn
+        if (shNextSpawnTime < Time.time)
+        {
+            // SH Spawn Time
+            float shSpawnTime = Mathf.Lerp(shSpawnTimeMinMax.y, fhSpawnTimeMinMax.x, Difficulty.GetDifficultyPercent());
+            shNextSpawnTime = Time.time + shSpawnTime;
+            // SH Spawn Features
+            Vector3 shSpawnPosition = new Vector3(-screenHalfSizeWorldUnits.x - shPrefab.transform.localScale.x * 2, Random.Range(-screenHalfSizeWorldUnits.y, screenHalfSizeWorldUnits.y));
+            GameObject newStabbingHazard = (GameObject)Instantiate(shPrefab, shSpawnPosition, Quaternion.identity);
         }
     }
 }

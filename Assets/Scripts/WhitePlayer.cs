@@ -5,19 +5,23 @@ using UnityEngine.UI;
 
 public class WhitePlayer : MonoBehaviour
 {
+    // speed
     public float speed = 7;
 
-    bool active = false;
+    // dimensions
     float screenHalfWidthInWorldUnits;
     float screenHalfHeightInWorldUnits;
     float halfPlayerWidth;
     float halfPlayerHeight;
 
+    // active, health, death
+    bool active = false;
     public float health = 2;
     public Text healthUI;
     public event System.Action OnWPlayerDeath;
     public GameObject flashWhenDamaged;
 
+    // state of players
     bool isOtherPlayerDead = false;
     bool amIDead = false;
 
@@ -74,9 +78,9 @@ public class WhitePlayer : MonoBehaviour
         {
             transform.position = new Vector2(screenHalfWidthInWorldUnits, transform.position.y);
         }
-        if (transform.position.y < halfPlayerHeight)
+        if (transform.position.y < -screenHalfHeightInWorldUnits)
         {
-            transform.position = new Vector2(transform.position.x, halfPlayerHeight);
+            transform.position = new Vector2(transform.position.x, -screenHalfHeightInWorldUnits);
         }
         if (transform.position.y > screenHalfHeightInWorldUnits)
         {
@@ -88,6 +92,7 @@ public class WhitePlayer : MonoBehaviour
     {
         if (active == true)
         {
+            // FH Damage
             if (triggerCollider.tag == "FH")
             {
                 // take damage
@@ -96,6 +101,15 @@ public class WhitePlayer : MonoBehaviour
 
                 StartCoroutine(WhiteTookDamage(0.5f));
                 Destroy(triggerCollider.gameObject);
+            }
+
+            // SH Damage
+            if (triggerCollider.tag == "StabbingHazard")
+            {
+                health--;
+                healthUI.text = health.ToString("N0");
+
+                StartCoroutine(WhiteTookDamage(0.5f));
             }
         }
     }
@@ -119,7 +133,10 @@ public class WhitePlayer : MonoBehaviour
     {
         Debug.Log("oh no black!");
         isOtherPlayerDead = true;
-        this.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
-        active = true;
+        if (amIDead == false)
+        {
+            this.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+            active = true;
+        }
     }
 }
