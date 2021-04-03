@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -3673518674941634745}
   m_Layer: 0
   m_Name: FallingHazard
-  m_TagString: FH
+  m_TagString: FallingHazard
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

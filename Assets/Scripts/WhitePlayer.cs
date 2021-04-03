@@ -14,18 +14,17 @@ public class WhitePlayer : MonoBehaviour
     float halfPlayerWidth;
     float halfPlayerHeight;
 
-    // active, health, death
-    bool active = false;
+    // health, death
     public float health = 2;
     public Text healthUI;
     public event System.Action OnWPlayerDeath;
     public GameObject flashWhenDamaged;
 
     // state of players
+    public bool active = false;
     bool isOtherPlayerDead = false;
     bool amIDead = false;
 
-    // Start is called before the first frame update
     void Start()
     {
         halfPlayerWidth = transform.localScale.x / 2f;
@@ -36,7 +35,6 @@ public class WhitePlayer : MonoBehaviour
         FindObjectOfType<BlackPlayer>().OnBPlayerDeath += OtherPlayerIsDead;
     }
 
-    // Update is called once per frame
     void Update()
     {
         // switches between active and inactive if other player is still alive
@@ -86,6 +84,9 @@ public class WhitePlayer : MonoBehaviour
         {
             transform.position = new Vector2(transform.position.x, screenHalfHeightInWorldUnits);
         }
+
+        // update health bar
+        healthUI.text = health.ToString("N0");
     }
 
     void OnTriggerEnter2D(Collider2D triggerCollider)
@@ -93,12 +94,10 @@ public class WhitePlayer : MonoBehaviour
         if (active == true)
         {
             // FH Damage
-            if (triggerCollider.tag == "FH")
+            if (triggerCollider.tag == "FallingHazard")
             {
                 // take damage
                 health--;
-                healthUI.text = health.ToString("N0");
-
                 StartCoroutine(WhiteTookDamage(0.5f));
                 Destroy(triggerCollider.gameObject);
             }
@@ -107,8 +106,6 @@ public class WhitePlayer : MonoBehaviour
             if (triggerCollider.tag == "StabbingHazard")
             {
                 health--;
-                healthUI.text = health.ToString("N0");
-
                 StartCoroutine(WhiteTookDamage(0.5f));
             }
         }

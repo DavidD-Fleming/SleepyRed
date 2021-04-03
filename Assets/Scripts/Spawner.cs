@@ -46,7 +46,7 @@ public class Spawner : MonoBehaviour
             float shSpawnTime = Mathf.Lerp(shSpawnTimeMinMax.y, fhSpawnTimeMinMax.x, Difficulty.GetDifficultyPercent());
             shNextSpawnTime = Time.time + shSpawnTime;
             // SH Spawn Features
-            Vector3 shSpawnPosition = new Vector3(-screenHalfSizeWorldUnits.x - shPrefab.transform.localScale.x * 2, Random.Range(-screenHalfSizeWorldUnits.y, screenHalfSizeWorldUnits.y));
+            Vector3 shSpawnPosition = new Vector3(-screenHalfSizeWorldUnits.x - shPrefab.transform.localScale.x * 2, Random.Range(-screenHalfSizeWorldUnits.y + shPrefab.transform.localScale.y, screenHalfSizeWorldUnits.y - shPrefab.transform.localScale.y));
             GameObject newStabbingHazard = (GameObject)Instantiate(shPrefab, shSpawnPosition, Quaternion.identity);
         }
     }

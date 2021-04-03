@@ -16,14 +16,14 @@ public class BlackPlayer : MonoBehaviour
     float halfPlayerWidth;
     float halfPlayerHeight;
 
-    // active, health, death
-    bool active = true;
+    // health, death
     public float health = 2;
     public Text healthUI;
     public event System.Action OnBPlayerDeath;
     public GameObject flashWhenDamaged;
 
     // state of players
+    public bool active = true;
     bool isOtherPlayerDead = false;
     bool amIDead = false;
 
@@ -94,6 +94,9 @@ public class BlackPlayer : MonoBehaviour
         {
             transform.position = new Vector2(transform.position.x, -screenHalfHeightInWorldUnits);
         }
+
+        // update health bar
+        healthUI.text = health.ToString("N0");
     }
 
     void OnTriggerEnter2D(Collider2D triggerCollider)
@@ -101,12 +104,10 @@ public class BlackPlayer : MonoBehaviour
         if (active == true)
         {
             // FH Damage
-            if (triggerCollider.tag == "FH")
+            if (triggerCollider.tag == "FallingHazard")
             {
                 // take damage
                 health--;
-                healthUI.text = health.ToString("N0");
-
                 StartCoroutine(BlackTookDamage(0.5f));
                 Destroy(triggerCollider.gameObject);
             }
@@ -115,8 +116,6 @@ public class BlackPlayer : MonoBehaviour
             if (triggerCollider.tag == "StabbingHazard")
             {
                 health--;
-                healthUI.text = health.ToString("N0");
-
                 StartCoroutine(BlackTookDamage(0.5f));
             }
         }

@@ -4,8 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - FH
   - StabbingHazard
+  - Buff
+  - BlackPlayer
+  - WhitePlayer
+  - FallingHazard
   layers:
   - Default
   - TransparentFX
