@@ -9,6 +9,7 @@ TagManager:
   - BlackPlayer
   - WhitePlayer
   - FallingHazard
+  - CloseCallOutline
   layers:
   - Default
   - TransparentFX

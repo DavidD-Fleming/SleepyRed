@@ -15,6 +15,7 @@ public class BuffSystem : MonoBehaviour
     // Buffs
     public GameObject[] wpBuffs;
     public GameObject[] bpBuffs;
+    public int closeCallPoints;
 
     // Dimensions
     Vector2 screenHalfSizeWorldUnits;
@@ -22,8 +23,8 @@ public class BuffSystem : MonoBehaviour
     void Start()
     {
         // find and identify players
-        GameObject blackPlayer = GameObject.Find("BlackPlayer");
-        GameObject whitePlayer = GameObject.Find("WhitePlayer");
+        GameObject blackPlayer = GameObject.FindWithTag("BlackPlayer");
+        GameObject whitePlayer = GameObject.FindWithTag("WhitePlayer");
         bPlayer = blackPlayer.GetComponent<BlackPlayer>();
         wPlayer = whitePlayer.GetComponent<WhitePlayer>();
 
@@ -34,15 +35,13 @@ public class BuffSystem : MonoBehaviour
     void Update()
     {
         // increments the other players buff progress
-        if (bPlayer.active == true)
+        if (bPlayer.active == true && wPlayer.amIDead == false)
         {
             whiteBuffState += whiteSteadyIncrement;
-            Debug.Log(whiteBuffState);
         }
-        if (wPlayer.active == true)
+        if (wPlayer.active == true && bPlayer.amIDead == false)
         {
             blackBuffState += blackSteadyIncrement;
-            Debug.Log(blackBuffState);
         }
 
         // time to give a buff
@@ -78,6 +77,20 @@ public class BuffSystem : MonoBehaviour
             screenHalfSizeWorldUnits.y += wpBuffs[randomBuff].transform.localScale.y;
             Vector3 buffSpawnLocation = new Vector3(Random.Range(-screenHalfSizeWorldUnits.x, screenHalfSizeWorldUnits.x), screenHalfSizeWorldUnits.y, 0f);
             GameObject newWhiteBuff = (GameObject)Instantiate(wpBuffs[randomBuff], buffSpawnLocation, Quaternion.identity);
+        }
+    }
+
+    public void CloseCallPoints(string player)
+    {
+        if (player == "BlackPlayer")
+        {
+            blackBuffState += closeCallPoints;
+            Debug.Log("Wow close call black!");
+        }
+        if (player == "WhitePlayer")
+        {
+            whiteBuffState += closeCallPoints;
+            Debug.Log("Wow close call white!");
         }
     }
 }

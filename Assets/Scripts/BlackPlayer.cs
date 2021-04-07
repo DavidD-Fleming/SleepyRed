@@ -25,7 +25,7 @@ public class BlackPlayer : MonoBehaviour
     // state of players
     public bool active = true;
     bool isOtherPlayerDead = false;
-    bool amIDead = false;
+    public bool amIDead = false;
 
     // Start is called before the first frame update
     void Start()
@@ -127,7 +127,7 @@ public class BlackPlayer : MonoBehaviour
         yield return new WaitForSeconds(redTime);
         flashWhenDamaged.SetActive(false);
 
-        if (OnBPlayerDeath != null && health == 0)
+        if (OnBPlayerDeath != null && health <= 0)
         {
             OnBPlayerDeath();
             active = false;

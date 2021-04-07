@@ -23,7 +23,7 @@ public class WhitePlayer : MonoBehaviour
     // state of players
     public bool active = false;
     bool isOtherPlayerDead = false;
-    bool amIDead = false;
+    public bool amIDead = false;
 
     void Start()
     {
