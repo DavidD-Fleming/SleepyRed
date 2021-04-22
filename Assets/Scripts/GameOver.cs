@@ -19,18 +19,6 @@ public class GameOver : MonoBehaviour
         FindObjectOfType<BlackPlayer>().OnBPlayerDeath += OnGameOver;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (gameOver)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                SceneManager.LoadScene(0);
-            }
-        }
-    }
-
     void OnGameOver()
     {
         bothPlayersDead++;
@@ -39,6 +27,15 @@ public class GameOver : MonoBehaviour
             gameOverScreen.SetActive(true);
             secondsSurvivedUI.text = Time.timeSinceLevelLoad.ToString("N2");
             gameOver = true;
+            Time.timeScale = 0;
+        }
+    }
+
+    public void StartGame()
+    {
+        if (gameOver)
+        {
+            SceneManager.LoadScene(0);
         }
     }
 }

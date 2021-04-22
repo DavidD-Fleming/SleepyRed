@@ -8,7 +8,7 @@ using System.Threading;
 public class GameStart : MonoBehaviour
 {
     public GameObject startScreen;
-    bool gameStart = true;
+    public bool gameStart = true;
 
     // Start is called before the first frame update
     void Start()
@@ -21,14 +21,16 @@ public class GameStart : MonoBehaviour
     {
         if (gameStart == true)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                gameStart = false;
-                Time.timeScale = 1;
-            }
             startScreen.SetActive(true);
         } else {
             startScreen.SetActive(false);
         }
     }
+
+    public void Play()
+    {
+        gameStart = false;
+        Time.timeScale = 1;
+    }
 }
+

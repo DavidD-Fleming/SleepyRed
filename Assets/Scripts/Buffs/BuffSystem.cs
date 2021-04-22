@@ -35,11 +35,11 @@ public class BuffSystem : MonoBehaviour
     void Update()
     {
         // increments the other players buff progress
-        if (bPlayer.active == true && wPlayer.amIDead == false)
+        if (bPlayer.active == true && wPlayer.amIDead == false && Time.timeScale == 1)
         {
             whiteBuffState += whiteSteadyIncrement;
         }
-        if (wPlayer.active == true && bPlayer.amIDead == false)
+        if (wPlayer.active == true && bPlayer.amIDead == false && Time.timeScale == 1)
         {
             blackBuffState += blackSteadyIncrement;
         }
