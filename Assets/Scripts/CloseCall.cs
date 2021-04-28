@@ -9,7 +9,6 @@ public class CloseCall : MonoBehaviour
     BuffSystem bSys;
 
     bool bothPlayersCloseCalled = false;
-
     void Start()
     {
         // find and identify players

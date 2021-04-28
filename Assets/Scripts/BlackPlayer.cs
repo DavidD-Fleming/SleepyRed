@@ -10,7 +10,7 @@ public class BlackPlayer : MonoBehaviour
     public float jumpHeight = 3;
     float verticalSpeed;
 
-    // dimesions
+    // dimensions
     float screenHalfWidthInWorldUnits;
     float screenHalfHeightInWorldUnits;
     float halfPlayerWidth;
@@ -129,9 +129,9 @@ public class BlackPlayer : MonoBehaviour
 
         if (OnBPlayerDeath != null && health <= 0)
         {
+            amIDead = true;
             OnBPlayerDeath();
             active = false;
-            amIDead = true;
             this.GetComponent<Renderer>().material.SetColor("_Color", new Color32(0, 0, 0, 0));
         }
     }

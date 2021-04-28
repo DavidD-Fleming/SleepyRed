@@ -10,8 +10,8 @@ public class GameOver : MonoBehaviour
     // Start is called before the first frame update
     public GameObject gameOverScreen;
     public Text secondsSurvivedUI;
+    public Text highScoreUI;
     bool gameOver;
-    int bothPlayersDead = 0;
 
     void Start()
     {
@@ -21,11 +21,19 @@ public class GameOver : MonoBehaviour
 
     void OnGameOver()
     {
-        bothPlayersDead++;
-        if (bothPlayersDead == 2)
+        if (FindObjectOfType<BlackPlayer>().amIDead && FindObjectOfType<WhitePlayer>().amIDead)
         {
-            gameOverScreen.SetActive(true);
+            ZPlayerPrefs.SetFloat("Ichor", ZPlayerPrefs.GetFloat("Ichor") + (int)Time.timeSinceLevelLoad);
             secondsSurvivedUI.text = Time.timeSinceLevelLoad.ToString("N2");
+            gameOverScreen.SetActive(true);
+            if (Time.timeSinceLevelLoad >= ZPlayerPrefs.GetFloat("HighScore"))
+            {
+                highScoreUI.text = Time.timeSinceLevelLoad.ToString("N2");
+                ZPlayerPrefs.SetFloat("HighScore", Time.timeSinceLevelLoad);
+            } else
+            {
+                highScoreUI.text = ZPlayerPrefs.GetFloat("HighScore").ToString("N2");
+            }
             gameOver = true;
             Time.timeScale = 0;
         }

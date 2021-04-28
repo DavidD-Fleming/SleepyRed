@@ -119,9 +119,9 @@ public class WhitePlayer : MonoBehaviour
 
         if (OnWPlayerDeath != null && health <= 0)
         {
+            amIDead = true;
             OnWPlayerDeath();
             active = false;
-            amIDead = true;
             this.GetComponent<Renderer>().material.SetColor("_Color", new Color32(0, 0, 0, 0));
         }
     }
